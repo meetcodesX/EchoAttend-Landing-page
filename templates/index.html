@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EchoAttend — AI Powered Attendance Management</title>
+<meta name="description" content="EchoAttend uses face recognition and voice authentication to automate classroom attendance with unmatched accuracy.">
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<!-- Stylesheet -->
+<link rel="stylesheet" href="{{ url_for('static', filename='CSS/style.css') }}">
+</head>
+<body>
+
+<!-- ============ PRELOADER ============ -->
+<div class="preloader" id="preloader">
+  <div class="preloader-mark">
+    <svg viewBox="0 0 48 48" class="preloader-ring">
+      <circle cx="24" cy="24" r="20"></circle>
+    </svg>
+    <span class="preloader-echo"></span>
+  </div>
+</div>
+
+<!-- ============ CUSTOM CURSOR ============ -->
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- ============ SCROLL PROGRESS ============ -->
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- ============ BACKGROUND FX ============ -->
+<div class="bg-fx" aria-hidden="true">
+  <div class="blob blob-a"></div>
+  <div class="blob blob-b"></div>
+  <div class="blob blob-c"></div>
+  <div class="grain"></div>
+  <canvas id="particleCanvas"></canvas>
+</div>
+
+<!-- ============ NAVIGATION ============ -->
+<header class="navbar" id="navbar">
+  <div class="container navbar-inner">
+    <a href="#home" class="logo">
+      <span class="logo-mark"><i class="fa-solid fa-wave-square"></i></span>
+      <span class="logo-text">Echo<span class="accent-text">Attend</span></span>
+    </a>
+
+    <nav class="nav-links" id="navLinks">
+      <a href="#home" class="nav-link active">Home</a>
+      <a href="#features" class="nav-link">Features</a>
+      <a href="#how-it-works" class="nav-link">How it Works</a>
+      <a href="#dashboard" class="nav-link">Dashboard</a>
+      <a href="#testimonials" class="nav-link">Testimonials</a>
+      <a href="#faq" class="nav-link">FAQ</a>
+      <a href="#contact" class="nav-link">Contact</a>
+    </nav>
+
+    <div class="navbar-actions">
+      <a href="https://echoattend-ai.streamlit.app/?page=login" class="btn btn-ghost">Login</a>
+      <a href="#cta" class="btn btn-primary magnetic">
+        <span>Get Started</span>
+      </a>
+    </div>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ 1. HERO ============ -->
+<section class="hero" id="home">
+  <div class="container hero-grid">
+
+    <div class="hero-copy reveal-up">
+      <div class="eyebrow">
+        <span class="eyebrow-dot"></span>
+        Now recognizing faces in real time
+      </div>
+
+      <h1 class="hero-title">
+        Attendance,
+        <span class="hero-title-typed"><span id="typedWord">Reimagined</span><span class="hero-caret"></span></span>
+        with AI
+      </h1>
+
+      <p class="hero-subtitle">
+        EchoAttend uses face recognition and voice authentication to automate
+        classroom attendance with unmatched accuracy — no roll call, no paper,
+        no guesswork.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#cta" class="btn btn-primary btn-lg magnetic">
+          <span>Get Started</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+        <button class="btn btn-glass btn-lg magnetic" id="watchDemoBtn">
+          <span class="play-icon"><i class="fa-solid fa-play"></i></span>
+          <span>Watch Demo</span>
+        </button>
+      </div>
+
+      <div class="hero-meta">
+        <div class="avatar-stack" aria-hidden="true">
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <p><strong>1,200+</strong> classrooms already switched this term</p>
+      </div>
+    </div>
+
+    <div class="hero-visual reveal-up" style="--delay:.15s" id="heroVisual">
+      <div class="scan-ring">
+        <svg viewBox="0 0 400 400" class="scan-svg">
+          <circle cx="200" cy="200" r="160" class="scan-ring-track"></circle>
+          <circle cx="200" cy="200" r="160" class="scan-ring-sweep"></circle>
+          <circle cx="200" cy="200" r="120" class="scan-ring-track thin"></circle>
+        </svg>
+        <span class="scan-node n1"><i class="fa-solid fa-user"></i></span>
+        <span class="scan-node n2"><i class="fa-solid fa-user"></i></span>
+        <span class="scan-node n3"><i class="fa-solid fa-user"></i></span>
+        <span class="scan-node n4"><i class="fa-solid fa-user"></i></span>
+      </div>
+
+      <div class="dashboard-mock" id="dashboardMock">
+        <div class="mock-topbar">
+          <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+          <span class="mock-title">EchoAttend · Session #402</span>
+        </div>
+
+        <div class="mock-body">
+          <div class="mock-card mock-card-scan">
+            <div class="mock-scan-label"><i class="fa-solid fa-camera"></i> Scanning classroom feed</div>
+            <div class="mock-scan-bar"><span></span></div>
+          </div>
+
+          <div class="mock-card floaty" style="--fy:1;">
+            <p class="mock-card-label">Recognition Accuracy</p>
+            <p class="mock-card-value" data-counter data-target="99.2" data-decimals="1">0</p>
+            <span class="mock-card-unit">%</span>
+          </div>
+
+          <div class="mock-card floaty" style="--fy:2;">
+            <p class="mock-card-label">Students Present</p>
+            <p class="mock-card-value" data-counter data-target="47">0</p>
+            <span class="mock-card-unit">/ 50</span>
+          </div>
+
+          <div class="mock-card mock-card-wide floaty" style="--fy:3;">
+            <p class="mock-card-label">Live Attendance</p>
+            <div class="mock-bars">
+              <span style="--h:40%"></span><span style="--h:70%"></span><span style="--h:55%"></span>
+              <span style="--h:90%"></span><span style="--h:65%"></span><span style="--h:80%"></span>
+              <span style="--h:95%"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="hero-fade-bottom"></div>
+</section>
+
+<!-- ============ 3. TRUSTED BY ============ -->
+<section class="trusted">
+  <div class="container">
+    <p class="trusted-label">Trusted in classrooms and labs across</p>
+    <div class="trusted-logos reveal-up">
+      <span><i class="fa-solid fa-graduation-cap"></i> National University</span>
+      <span><i class="fa-solid fa-bolt"></i> IEEE Student Chapter</span>
+      <span><i class="fa-solid fa-microchip"></i> AI Research Club</span>
+      <span><i class="fa-solid fa-flask"></i> Cognition Labs</span>
+      <span><i class="fa-solid fa-building-columns"></i> Riverdale College</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4. FEATURES ============ -->
+<section class="features" id="features">
+  <div class="container">
+    <div class="section-head reveal-up">
+      <span class="section-eyebrow">Capabilities</span>
+      <h2 class="section-title">Everything a classroom needs, automated</h2>
+      <p class="section-sub">Six systems working together so attendance takes seconds, not minutes.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card reveal-up">
+        <div class="feature-icon"><i class="fa-solid fa-face-viewfinder"></i></div>
+        <h3>Face Recognition</h3>
+        <p>Identifies every student in a single camera sweep, even in group frames and low light.</p>
+      </div>
+
+      <div class="feature-card reveal-up" style="--delay:.05s">
+        <div class="feature-icon"><i class="fa-solid fa-waveform-lines"></i></div>
+        <h3>Voice Recognition</h3>
+        <p>A second authentication layer that confirms identity by voiceprint before marking present.</p>
+      </div>
+
+      <div class="feature-card reveal-up" style="--delay:.1s">
+        <div class="feature-icon"><i class="fa-solid fa-bolt"></i></div>
+        <h3>Real-time Attendance</h3>
+        <p>Sessions populate live as students are recognized — no waiting for a batch job to finish.</p>
+      </div>
+
+      <div class="feature-card reveal-up" style="--delay:.15s">
+        <div class="feature-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+        <h3>Cloud Sync</h3>
+        <p>Every session syncs instantly, so records are never tied to a single device or device failure.</p>
+      </div>
+
+      <div class="feature-card reveal-up" style="--delay:.2s">
+        <div class="feature-icon"><i class="fa-solid fa-chart-pie"></i></div>
+        <h3>Analytics Dashboard</h3>
+        <p>Attendance trends, heatmaps, and subject-wise breakdowns generated the moment class ends.</p>
+      </div>
+
+      <div class="feature-card reveal-up" style="--delay:.25s">
+        <div class="feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <h3>Secure Authentication</h3>
+        <p>Biometric data is encrypted end-to-end and never leaves your institution's own environment.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5. HOW IT WORKS ============ -->
+<section class="how-it-works" id="how-it-works">
+  <div class="container">
+    <div class="section-head reveal-up">
+      <span class="section-eyebrow">Process</span>
+      <h2 class="section-title">From login to report, in one flow</h2>
+      <p class="section-sub">Six steps run automatically once a teacher opens a session.</p>
+    </div>
+
+    <div class="timeline">
+      <div class="timeline-line" aria-hidden="true"><span class="timeline-line-fill"></span></div>
+
+      <div class="timeline-step reveal-up">
+        <div class="timeline-icon"><i class="fa-solid fa-right-to-bracket"></i></div>
+        <h3>Teacher Login</h3>
+        <p>Authenticate with institutional credentials to open the day's schedule.</p>
+      </div>
+
+      <div class="timeline-step reveal-up" style="--delay:.08s">
+        <div class="timeline-icon"><i class="fa-solid fa-square-plus"></i></div>
+        <h3>Create Attendance Session</h3>
+        <p>Pick a class and subject; EchoAttend opens a live camera session in one tap.</p>
+      </div>
+
+      <div class="timeline-step reveal-up" style="--delay:.16s">
+        <div class="timeline-icon"><i class="fa-solid fa-face-viewfinder"></i></div>
+        <h3>AI Detects Faces</h3>
+        <p>The model scans the room, isolating and matching each face against enrolled students.</p>
+      </div>
+
+      <div class="timeline-step reveal-up" style="--delay:.24s">
+        <div class="timeline-icon"><i class="fa-solid fa-microphone"></i></div>
+        <h3>Voice Authentication</h3>
+        <p>A short voice prompt confirms identity for any face the model isn't fully confident on.</p>
+      </div>
+
+      <div class="timeline-step reveal-up" style="--delay:.32s">
+        <div class="timeline-icon"><i class="fa-solid fa-database"></i></div>
+        <h3>Attendance Stored</h3>
+        <p>Verified records write to the cloud instantly, timestamped and tamper-proof.</p>
+      </div>
+
+      <div class="timeline-step reveal-up" style="--delay:.4s">
+        <div class="timeline-icon"><i class="fa-solid fa-file-chart-column"></i></div>
+        <h3>Reports Generated</h3>
+        <p>Subject-wise and student-wise reports are ready before the next class begins.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6. DASHBOARD PREVIEW ============ -->
+<section class="dashboard-preview" id="dashboard">
+  <div class="container">
+    <div class="section-head reveal-up">
+      <span class="section-eyebrow">Inside EchoAttend</span>
+      <h2 class="section-title">A dashboard built for both sides of the room</h2>
+      <p class="section-sub">Teachers see the full picture. Students see exactly their own record.</p>
+    </div>
+
+    <div class="laptop-mock reveal-up">
+      <div class="laptop-screen">
+        <div class="laptop-topbar">
+          <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+        </div>
+        <div class="laptop-body">
+          <aside class="laptop-sidebar">
+            <span class="side-item active"><i class="fa-solid fa-gauge-high"></i></span>
+            <span class="side-item"><i class="fa-solid fa-users"></i></span>
+            <span class="side-item"><i class="fa-solid fa-chart-pie"></i></span>
+            <span class="side-item"><i class="fa-solid fa-gear"></i></span>
+          </aside>
+
+          <div class="laptop-main">
+            <div class="lp-row">
+              <div class="lp-card lp-pie">
+                <p class="lp-card-title">Attendance Split</p>
+                <div class="pie-chart" style="--p:82"></div>
+                <p class="lp-card-foot">82% present today</p>
+              </div>
+
+              <div class="lp-card lp-heatmap">
+                <p class="lp-card-title">Weekly Heatmap</p>
+                <div class="heatmap-grid">
+                  <span style="--v:.9"></span><span style="--v:.4"></span><span style="--v:.7"></span><span style="--v:.3"></span><span style="--v:.95"></span>
+                  <span style="--v:.6"></span><span style="--v:.8"></span><span style="--v:.5"></span><span style="--v:.9"></span><span style="--v:.2"></span>
+                  <span style="--v:.7"></span><span style="--v:.65"></span><span style="--v:.85"></span><span style="--v:.4"></span><span style="--v:.75"></span>
+                </div>
+              </div>
+
+              <div class="lp-card lp-subjects">
+                <p class="lp-card-title">Subject-wise Report</p>
+                <ul class="subject-list">
+                  <li><span>Data Structures</span><i style="--w:92%"></i></li>
+                  <li><span>Linear Algebra</span><i style="--w:78%"></i></li>
+                  <li><span>AI Fundamentals</span><i style="--w:96%"></i></li>
+                  <li><span>Signals &amp; Systems</span><i style="--w:64%"></i></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="laptop-base"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7. WHY CHOOSE ECHOATTEND ============ -->
+<section class="why-choose">
+  <div class="container why-grid">
+    <div class="why-visual reveal-up">
+      <div class="why-glow"></div>
+      <div class="why-card">
+        <i class="fa-solid fa-shield-check"></i>
+        <p>Every match is logged with a confidence score — nothing is marked present on a guess.</p>
+      </div>
+    </div>
+
+    <div class="why-copy reveal-up" style="--delay:.1s">
+      <span class="section-eyebrow">Why EchoAttend</span>
+      <h2 class="section-title">Built to be trusted, not just fast</h2>
+      <ul class="why-list">
+        <li><i class="fa-solid fa-check"></i> 99% recognition accuracy across lighting conditions</li>
+        <li><i class="fa-solid fa-check"></i> Works in real time — no post-processing delay</li>
+        <li><i class="fa-solid fa-check"></i> Multiple face detection in a single frame</li>
+        <li><i class="fa-solid fa-check"></i> Voice verification as a second authentication layer</li>
+        <li><i class="fa-solid fa-check"></i> Encrypted cloud storage, owned by your institution</li>
+        <li><i class="fa-solid fa-check"></i> Full attendance in under 3 seconds per student</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 8. STATISTICS ============ -->
+<section class="stats">
+  <div class="container stats-grid">
+    <div class="stat-item reveal-up">
+      <p class="stat-value" data-counter data-target="99">0<span>%</span></p>
+      <p class="stat-label">Recognition Accuracy</p>
+    </div>
+    <div class="stat-item reveal-up" style="--delay:.05s">
+      <p class="stat-value"><span data-counter data-target="3">0</span>s</p>
+      <p class="stat-label">Attendance Time</p>
+    </div>
+    <div class="stat-item reveal-up" style="--delay:.1s">
+      <p class="stat-value" data-counter data-target="1000">0<span>+</span></p>
+      <p class="stat-label">Students</p>
+    </div>
+    <div class="stat-item reveal-up" style="--delay:.15s">
+      <p class="stat-value" data-counter data-target="50">0<span>+</span></p>
+      <p class="stat-label">Teachers</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 9. TESTIMONIALS ============ -->
+<section class="testimonials" id="testimonials">
+  <div class="container">
+    <div class="section-head reveal-up">
+      <span class="section-eyebrow">Voices</span>
+      <h2 class="section-title">What the room actually says</h2>
+    </div>
+
+    <div class="testimonial-grid">
+      <div class="testimonial-card reveal-up">
+        <div class="testimonial-quote-icon"><i class="fa-solid fa-quote-left"></i></div>
+        <p class="testimonial-text">Attendance used to eat five minutes of every lecture. Now it's done before I finish writing the date on the board.</p>
+        <div class="testimonial-person">
+          <span class="testimonial-avatar">AS</span>
+          <div>
+            <p class="testimonial-name">Aarav Sharma</p>
+            <p class="testimonial-role">Student, Computer Science</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card reveal-up" style="--delay:.08s">
+        <div class="testimonial-quote-icon"><i class="fa-solid fa-quote-left"></i></div>
+        <p class="testimonial-text">The voice verification step won our compliance review instantly — nobody could argue with a two-factor biometric log.</p>
+        <div class="testimonial-person">
+          <span class="testimonial-avatar">MI</span>
+          <div>
+            <p class="testimonial-name">Meera Iyer</p>
+            <p class="testimonial-role">Lecturer, Electronics</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card reveal-up" style="--delay:.16s">
+        <div class="testimonial-quote-icon"><i class="fa-solid fa-quote-left"></i></div>
+        <p class="testimonial-text">I was skeptical about accuracy in a 90-seat hall. It has not missed a face in three semesters of use.</p>
+        <div class="testimonial-person">
+          <span class="testimonial-avatar">RK</span>
+          <div>
+            <p class="testimonial-name">Dr. Rohan Kapoor</p>
+            <p class="testimonial-role">Professor, Applied Sciences</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 10. FAQ ============ -->
+<section class="faq" id="faq">
+  <div class="container">
+    <div class="section-head reveal-up">
+      <span class="section-eyebrow">Questions</span>
+      <h2 class="section-title">Before you ask, here's the answer</h2>
+    </div>
+
+    <div class="faq-list reveal-up">
+      <div class="faq-item">
+        <button class="faq-question">
+          <span>How accurate is the face recognition, really?</span>
+          <i class="fa-solid fa-plus"></i>
+        </button>
+        <div class="faq-answer">
+          <p>EchoAttend's model is benchmarked at 99% accuracy across varied lighting and angles, and every match includes a confidence score visible to the teacher.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          <span>What happens to student biometric data?</span>
+          <i class="fa-solid fa-plus"></i>
+        </button>
+        <div class="faq-answer">
+          <p>Face and voice data are encrypted end-to-end and stored within your institution's own cloud environment. EchoAttend never shares or sells biometric data.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          <span>Why does it need voice recognition as well as face?</span>
+          <i class="fa-solid fa-plus"></i>
+        </button>
+        <div class="faq-answer">
+          <p>Voice acts as a second authentication factor for any low-confidence match, reducing false positives to effectively zero without slowing the class down.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          <span>Can I export attendance reports?</span>
+          <i class="fa-solid fa-plus"></i>
+        </button>
+        <div class="faq-answer">
+          <p>Yes. Subject-wise and student-wise reports generate automatically and export to CSV or PDF directly from the dashboard.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-question">
+          <span>Is the system secure against spoofing?</span>
+          <i class="fa-solid fa-plus"></i>
+        </button>
+        <div class="faq-answer">
+          <p>Liveness detection screens out photos and recordings before a match is ever attempted, and every session is logged for audit.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 11. CTA ============ -->
+<section class="cta" id="cta">
+  <div class="container cta-inner reveal-up">
+    <h2>Ready to modernize attendance?</h2>
+    <p>Set up your first EchoAttend session in under ten minutes.</p>
+    <a href="https://echoattend-ai.streamlit.app/"
+      class="btn btn-white btn-lg magnetic"
+      target="_blank"
+      rel="noopener noreferrer">
+        <span>Launch EchoAttend</span>
+        <i class="fa-solid fa-arrow-right"></i>
+    </a>
+  </div>
+</section>
+
+<!-- Demo Video Modal -->
+<div class="demo-modal" id="demoModal">
+    <div class="demo-modal-overlay"></div>
+
+    <div class="demo-modal-content">
+
+        <button class="demo-close" id="demoClose">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="demo-video-wrapper">
+            <video id="demoVideo" controls playsinline>
+                <source src="{{ url_for('static', filename='videos/echoattend-demo.mp4') }}" type="video/mp4">
+                Your browser does not support video playback.
+            </video>
+        </div>
+
+    </div>
+</div>
+
+</main>
+
+<!-- ============ 12. FOOTER ============ -->
+<footer class="footer" id="contact">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <a href="#home" class="logo">
+        <span class="logo-mark"><i class="fa-solid fa-wave-square"></i></span>
+        <span class="logo-text">Echo<span class="accent-text">Attend</span></span>
+      </a>
+      <p>AI powered attendance management for classrooms that don't have time to waste.</p>
+      <div class="social-icons">
+        <a href="https://github.com/meetcodesX" target="_blank" rel="noopener" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+        <a href="https://linkedin.com/in/meetsahu" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+        <a href="https://instagram.com/meett.ft" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+      </div>
+    </div>
+
+    <div class="footer-links">
+      <h4>Product</h4>
+      <a href="#features">Features</a>
+      <a href="#how-it-works">How it Works</a>
+      <a href="#dashboard">Dashboard</a>
+    </div>
+
+    <div class="footer-links">
+      <h4>Company</h4>
+      <a href="#testimonials">Testimonials</a>
+      <a href="#faq">FAQ</a>
+      <a href="#contact">Contact</a>
+    </div>
+
+    <div class="footer-links">
+      <h4>Get in touch</h4>
+      <a href="mailto:hello@echoattend.io">hello@echoattend.io</a>
+      <a href="#login">Login</a>
+      <a href="#cta">Get Started</a>
+    </div>
+  </div>
+
+  <div class="container footer-bottom">
+    <p>&copy; <span id="year"></span> EchoAttend. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- ============ BACK TO TOP ============ -->
+<button class="back-to-top" id="backToTop" aria-label="Back to top">
+  <i class="fa-solid fa-arrow-up"></i>
+</button>
+
+<!-- ============ DEMO MODAL ============ -->
+<div class="demo-modal" id="demoModal">
+  <div class="demo-modal-backdrop" id="demoModalBackdrop"></div>
+  <div class="demo-modal-panel">
+    <button class="demo-modal-close" id="demoModalClose" aria-label="Close">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+    <div class="demo-modal-body">
+      <i class="fa-solid fa-face-viewfinder demo-modal-icon"></i>
+      <h3>Demo session starting</h3>
+      <p>In the full product this launches a live walkthrough of a real attendance session, face detection and all.</p>
+    </div>
+  </div>
+</div>
+
+<!-- DEMO VIDEO MODAL -->
+<dialog id="demoDialog" class="demo-dialog">
+
+    <button class="demo-close" id="demoClose" type="button">
+        <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <div class="demo-video-container">
+        <video id="demoVideo" controls playsinline>
+            <source
+                src="{{ url_for('static', filename='videos/echoattend-demo.mp4') }}"
+                type="video/mp4">
+        </video>
+    </div>
+
+</dialog>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</body>
+</html>
